@@ -129,7 +129,9 @@ I implemented this step in cell 15 of ![AdvanceLaneFinding.ipynb][ProjectCode] i
 
 To make use of previous fame knowledge, I had to introduce two new classes to make pipeline impementation stateful. Please refer to Video Processing in first markdown cell in ![AdvanceLaneFinding.ipynb][ProjectCode], which describes in details about these classes: `Line` and `LaneGenerator`. Implementation of these classes are present in cell 17 and 18 respectively.
 
-Here's a linke to my [youtube video](https://youtu.be/ACYAp-Ssum0) for output on ![ProjectVideo.mp4][ProjectVideoInput]
+Below is the link for output on ![ProjectVideo.mp4][ProjectVideoInput]
+
+[![Project Video Output](https://img.youtube.com/vi/ACYAp-Ssum0/0.jpg)](https://youtu.be/ACYAp-Ssum0)
 
 Implementation is not very robust yet as lines flicker around lanes in tricky situations.
 
