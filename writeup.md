@@ -68,6 +68,10 @@ I used a combination of color and gradient thresholds to generate a binary image
 
 ![Color and Gradient Threshold Output][ColorGradient]
 
+There is still too much of unwanted edges in the above output image. We can focus on region with lane lines only by masking off unwanted portion outside lane and between lane lines as well. We use similar masking method as provided in first Lane Finding project of Term1. Example output on above image:
+
+![Region Of Interest][RegionOfInterest]
+
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
 The code for my perspective transform includes a function called `perspective_transform()`, which appears in cell 10 of [Jupyter Notebook][ProjectCode]. The `perspective_transform()` function takes as inputs an image (`img`). I chose the hardcode the source and destination points in the following manner:
