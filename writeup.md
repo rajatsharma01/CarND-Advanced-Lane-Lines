@@ -20,7 +20,8 @@ The goals / steps of this project are the following:
 [//]: # (Image References)
 
 [ProjectCode]: ./AdvanceLaneFinding.ipynb
-[ColorGradient]: ./output_images/Color&GradientThreshold.png "Color and Gradient Threshold"
+[ColorSpaces]: ./output_images/ColorChannels.png "Different Color Spaces"
+[ColorGradient]: ./output_images/ColorGradientThreshold.png "Color and Gradient Threshold"
 [LaneDetection]: ./output_images/LaneDetection.png "Lane Detection"
 [PerspectiveTransform]: ./output_images/PerspectiveTransform.png "Perspective Transform"
 [PolynomialFit]: ./output_images/PolynomialFit.png "Polynomial Fit Example"
@@ -64,7 +65,11 @@ To demonstrate this step, I will describe how I apply the distortion correction 
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps in cell 5-7 of ![Jupyter Notebook][ProjectCode]).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+I used a combination of color and gradient thresholds to generate a binary image (thresholding steps in cell 5-7 of ![Jupyter Notebook][ProjectCode]). Below image shows how our lane image appear in different color spaces as it helps to use different color spaces for color thresholding.
+
+![Various Color Sapces][ColorSpaces]
+
+For Color Thresholding, I have leveraged ideas from [Joshua Owoyemi](https://medium.com/@tjosh.owoyemi/finding-lane-lines-with-colour-thresholds-beb542e0d839) for picking yellow and white lane images from RGB color space. I have also used Lab blue-green channel to select yellow line pixels. Here's an example of my output for this step.
 
 ![Color and Gradient Threshold Output][ColorGradient]
 
@@ -77,10 +82,10 @@ There is still too much of unwanted edges in the above output image. We can focu
 The code for my perspective transform includes a function called `perspective_transform()`, which appears in cell 10 of [Jupyter Notebook][ProjectCode]. The `perspective_transform()` function takes as inputs an image (`img`). I chose the hardcode the source and destination points in the following manner:
 
 ```python
-    src_pts = np.float32([[565, 470],
-                          [xsize - 565, 470],
-                          [xsize - 200, ysize],
-                          [200, ysize]])
+    src_pts = np.float32([[560, 470],
+                          [xsize - 560, 470],
+                          [xsize - 170, ysize],
+                          [170, ysize]])
     
     offset = 400
     dst_pts = np.float32([[offset, 0],
@@ -93,10 +98,10 @@ This resulted in the following source and destination points:
 
 | Source        | Destination   | 
 |:-------------:|:-------------:| 
-| 565, 470      | 400, 0        | 
-| 715, 470      | 880, 0        |
-| 1080, 720     | 880, 720      |
-| 200, 720      | 400, 720      |
+| 560, 470      | 400, 0        | 
+| 720, 470      | 880, 0        |
+| 1110, 720     | 880, 720      |
+| 170, 720      | 400, 720      |
 
 I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
@@ -135,9 +140,13 @@ To make use of previous fame knowledge, I had to introduce two new classes to ma
 
 Below is the link for output on ![ProjectVideo.mp4][ProjectVideoInput]
 
-[![Project Video Output](https://img.youtube.com/vi/ACYAp-Ssum0/0.jpg)](https://youtu.be/ACYAp-Ssum0)
+[![Project Video Output](https://img.youtube.com/vi/o8hAKpHU80A/0.jpg)](https://youtu.be/o8hAKpHU80A)
 
-Implementation is not very robust yet as lines flicker around lanes in tricky situations.
+These are some details about video. On top right conrner, there is a perspective view of the image that was used during polynomial fitting for this frame. It shows some important information, which can help evaluate pipeline performance:
+1. Green mask around line pixels represents search window, it switches between box like mask (sliding windows) to curve like mask (derived from previous fit)
+2. Red pixels are line pixels selected from current frame for curve fitting.
+3. Blue pixels are from previous 9 frames which we use along with new frame to create a smooth inertial fit. Note that these would appear as trail of red color pixels as these were current positions in previous frame.
+4. Yellow fit line showing resultant fit that was ultimately selected for this frame.
 
 ---
 
@@ -153,10 +162,4 @@ Here is summary of approaches that I took:
 5. Fitting polynomial by combining pixels that were used with previous n frames with new frames candidate pixels to fit the polynomial. This adds bias with previous frames fit and helps avoiding sudden shifts.
 6. Reset search to sliding window if lane width and curvature radius of two lines differ by 20%
 
-Above changes made pipeline run through the entire project video with slight hiccups in patchy areas or roads and tree shades. However it doesn't work well for challenge video, I need to imrpove my pipelines to make it work better. I have started with notion of confidence in current line fit however couldn't yet fully expand the ideas in given time frame. These are few directions I have in my to explore in future:
-
-1. Have multiple candidate vertical lines and select one with highest confidence factor (more vertical spread and lessor horizontal variance)
-2. If one of the lane lines polynomial fit as higher confidence factor, while other lane doesn't. Use first lines polynomial to find x points windows for second line with average width apart. Now search for line pixels within this window and fit a polynomial to pixels present in these windows.
-3. Explore better ways to avoid noisy pixels by trying new image spaces and color and gradient threshold values.
-4. Slightly long term, explore deep learning based approaches to select lane lines.
-5. Inputs from reviewers :)
+There are still some challenges as current pipeline isn't working well for the challenge video, as same lane has two shades, confusing our pipeline to think of it as a different lane.
