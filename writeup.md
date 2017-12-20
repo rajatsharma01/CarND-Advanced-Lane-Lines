@@ -148,6 +148,13 @@ These are some details about video. On top right conrner, there is a perspective
 3. Blue pixels are from previous 9 frames which we use along with new frame to create a smooth inertial fit. Note that these would appear as trail of red color pixels as these were current positions in previous frame.
 4. Yellow fit line showing resultant fit that was ultimately selected for this frame.
 
+And this is ouput of challenge video
+
+[![Project Video Output](https://img.youtube.com/vi/DHWY1H9unU8/0.jpg)](https://youtu.be/DHWY1H9unU8)
+
+Not quite the perfect solution as it lines keep wobbling on challenge video. However to even reach there, I had to do 2 minor tweeks:
+1. Keeping lanes far apart in perspective transform as these lanes are narrow. (offset=200 instead of 400)
+2. Using 20 historic frame instead of 10 to smooth the curve fittin, it helps when there are very few pixels are detected in new frame.
 ---
 
 ### Discussion
